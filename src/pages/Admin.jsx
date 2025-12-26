@@ -115,83 +115,83 @@ const Admin = () => {
   }
 
   return (
-    <div className="w-full bg-gray-100 pb-20 md:pb-0">
-      <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+    <div className="w-full bg-gray-100 min-h-screen">
+      <div className="w-full max-w-[1800px] mx-auto px-8 py-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+            <h1 className="text-3xl font-bold text-gray-800">
               Panel de Administración
             </h1>
-            <p className="text-gray-600 mt-1 text-sm md:text-base">
+            <p className="text-gray-600 mt-1">
               Gestiona pedidos y usuarios desde un solo lugar
             </p>
           </div>
-          <div className="bg-white p-3 md:p-4 rounded-lg shadow flex items-center space-x-3 md:space-x-4 w-full md:w-auto">
-            <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+          <div className="bg-white p-4 rounded-lg shadow flex items-center space-x-4">
+            <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
               <span className="text-lg text-white font-bold">
                 {auth?.nombre?.[0]?.toUpperCase() || 'A'}
               </span>
             </div>
             <div>
-              <p className="text-xs md:text-sm text-gray-600">Administrador</p>
-              <p className="font-medium text-gray-800 text-sm md:text-base">{auth?.nombre || 'Admin'}</p>
+              <p className="text-sm text-gray-600">Administrador</p>
+              <p className="font-medium text-gray-800">{auth?.nombre || 'Admin'}</p>
             </div>
           </div>
         </div>
 
-        {/* Estadísticas - Responsive grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow p-4 md:p-6">
+        {/* Estadísticas */}
+        <div className="grid grid-cols-4 gap-6 mb-6">
+          <div className="bg-white rounded-lg shadow p-6">
             <div>
-              <h3 className="text-sm md:text-base font-semibold text-gray-600">Total Pedidos</h3>
-              <p className="text-2xl md:text-3xl font-bold text-blue-600 mt-1 md:mt-2">
+              <h3 className="text-base font-semibold text-gray-600">Total Pedidos</h3>
+              <p className="text-3xl font-bold text-blue-600 mt-2">
                 {pedidos.length > 0 ? Math.max(...pedidos.map((p) => p.id)) : 0}
               </p>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-4 md:p-6">
+          <div className="bg-white rounded-lg shadow p-6">
             <div>
-              <h3 className="text-sm md:text-base font-semibold text-gray-600">Retirados</h3>
-              <p className="text-2xl md:text-3xl font-bold text-green-600 mt-1 md:mt-2">
+              <h3 className="text-base font-semibold text-gray-600">Retirados</h3>
+              <p className="text-3xl font-bold text-green-600 mt-2">
                 {pedidos.filter((p) => p.estado === 'retirado').length}
               </p>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-4 md:p-6">
+          <div className="bg-white rounded-lg shadow p-6">
             <div>
-              <h3 className="text-sm md:text-base font-semibold text-gray-600">En Proceso</h3>
-              <p className="text-2xl md:text-3xl font-bold text-yellow-600 mt-1 md:mt-2">
+              <h3 className="text-base font-semibold text-gray-600">En Proceso</h3>
+              <p className="text-3xl font-bold text-yellow-600 mt-2">
                 {pedidos.filter((p) => p.estado === 'en_proceso').length}
               </p>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-4 md:p-6">
+          <div className="bg-white rounded-lg shadow p-6">
             <div>
-              <h3 className="text-sm md:text-base font-semibold text-gray-600">Listos</h3>
-              <p className="text-2xl md:text-3xl font-bold text-green-600 mt-1 md:mt-2">
+              <h3 className="text-base font-semibold text-gray-600">Listos</h3>
+              <p className="text-3xl font-bold text-green-600 mt-2">
                 {pedidos.filter((p) => p.estado === 'listo_para_retirar').length}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Layout principal - Desktop: lado a lado, Mobile: apilado */}
-        <div className="flex flex-col lg:flex-row gap-4 md:gap-6 w-full">
-          {/* Panel de Pedidos - Ocupa 2/3 del espacio en desktop */}
-          <div className="w-full lg:w-2/3 bg-white rounded-lg shadow-lg flex-shrink-0">
-            <div className="p-4 md:p-6 border-b border-gray-200">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        {/* Layout principal - Siempre lado a lado */}
+        <div className="flex flex-row gap-6 w-full">
+          {/* Panel de Pedidos - Ocupa 2/3 del espacio */}
+          <div className="w-2/3 bg-white rounded-lg shadow-lg">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg md:text-xl font-semibold text-gray-800">Pedidos</h2>
-                  <p className="text-xs md:text-sm text-gray-600 mt-1">
+                  <h2 className="text-xl font-semibold text-gray-800">Pedidos</h2>
+                  <p className="text-sm text-gray-600 mt-1">
                     {pedidosFiltrados.length} de {pedidos.length} pedidos
                   </p>
                 </div>
-                <div className="relative w-full lg:w-80">
+                <div className="relative w-80">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -208,26 +208,26 @@ const Admin = () => {
               </div>
             </div>
             <div className="overflow-x-auto">
-              <div className="min-h-[300px] max-h-[calc(100vh-350px)] lg:max-h-[calc(100vh-280px)] overflow-y-auto">
+              <div className="min-h-[400px] max-h-[calc(100vh-300px)] overflow-y-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50 sticky top-0 z-10">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         ID
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Cliente
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Fecha Creación
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Estado
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Total
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Acciones
                       </th>
                     </tr>
@@ -247,22 +247,15 @@ const Admin = () => {
                     ) : (
                       pedidosFiltrados.map((pedido) => (
                         <tr key={pedido.id} className="hover:bg-blue-50 transition-colors cursor-pointer" onClick={() => verDetalles(pedido)}>
-                          <td className="px-4 py-3 whitespace-nowrap">
+                          <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-semibold text-gray-900">#{pedido.id}</div>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-6 py-4">
                             <div className="text-sm font-medium text-gray-900">
                               {pedido.Usuario?.nombre || 'N/A'}
                             </div>
-                            <div className="text-xs text-gray-500 md:hidden mt-1">
-                              {new Date(pedido.createdAt).toLocaleDateString('es-ES', {
-                                day: '2-digit',
-                                month: 'short',
-                                year: 'numeric'
-                              })}
-                            </div>
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
+                          <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-900">
                               {new Date(pedido.createdAt).toLocaleDateString('es-ES', {
                                 year: 'numeric',
@@ -273,7 +266,7 @@ const Admin = () => {
                               })}
                             </div>
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
+                          <td className="px-6 py-4 whitespace-nowrap">
                             <span
                               className={`px-2.5 py-1 inline-flex text-xs font-semibold rounded-full ${
                                 pedido.estado === 'listo_para_retirar'
@@ -286,20 +279,20 @@ const Admin = () => {
                               }`}
                             >
                               {pedido.estado === 'listo_para_retirar'
-                                ? 'Listo'
+                                ? 'Listo para retirar'
                                 : pedido.estado === 'en_proceso'
-                                ? 'Proceso'
+                                ? 'En proceso'
                                 : pedido.estado === 'retirado'
                                 ? 'Retirado'
                                 : 'Pendiente'}
                             </span>
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap hidden lg:table-cell">
+                          <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-semibold text-gray-900">
                               ${Number(pedido.precio_total).toFixed(2)}
                             </div>
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation()
@@ -319,25 +312,25 @@ const Admin = () => {
             </div>
           </div>
 
-          {/* Panel de Usuarios - Ocupa 1/3 del espacio en desktop */}
-          <div className="w-full lg:w-1/3 lg:min-w-[350px] bg-white rounded-lg shadow-lg flex-shrink-0">
-            <div className="p-4 md:p-6 border-b border-gray-200">
-              <h2 className="text-lg md:text-xl font-semibold text-gray-800">Usuarios</h2>
-              <p className="text-xs md:text-sm text-gray-600 mt-1">
+          {/* Panel de Usuarios - Ocupa 1/3 del espacio */}
+          <div className="w-1/3 min-w-[350px] bg-white rounded-lg shadow-lg">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800">Usuarios</h2>
+              <p className="text-sm text-gray-600 mt-1">
                 {usuarios.length} usuario{usuarios.length !== 1 ? 's' : ''} registrado{usuarios.length !== 1 ? 's' : ''}
               </p>
             </div>
-            <div className="overflow-x-auto max-h-[calc(100vh-350px)] lg:max-h-[calc(100vh-280px)] overflow-y-auto">
+            <div className="overflow-x-auto max-h-[calc(100vh-300px)] overflow-y-auto">
               <table className="w-full">
                 <thead className="bg-gray-50 sticky top-0 z-10">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Nombre
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Email
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Rol
                     </th>
                   </tr>
@@ -357,16 +350,15 @@ const Admin = () => {
                   ) : (
                     usuarios.map((usuario) => (
                       <tr key={usuario.id} className="hover:bg-blue-50 transition-colors">
-                        <td className="px-4 py-3">
+                        <td className="px-6 py-4">
                           <div className="text-sm font-medium text-gray-900 truncate">{usuario.nombre}</div>
-                          <div className="text-xs text-gray-500 lg:hidden mt-1 truncate">{usuario.email}</div>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap hidden lg:table-cell">
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-500 truncate max-w-[200px]" title={usuario.email}>
                             {usuario.email}
                           </div>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`px-2 py-1 inline-flex text-xs font-semibold rounded-full ${
                               usuario.rol === 'admin'

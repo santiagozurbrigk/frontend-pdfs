@@ -115,9 +115,10 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 w-full">
-      <div className="w-full px-8 py-6">
-        <div className="flex justify-between items-center mb-8">
+    <div className="min-h-screen bg-gray-100 w-full pb-20 md:pb-0">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-800">
               Panel de Administración
@@ -126,7 +127,7 @@ const Admin = () => {
               Gestiona pedidos y usuarios desde un solo lugar
             </p>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow flex items-center space-x-4">
+          <div className="bg-white p-4 rounded-lg shadow flex items-center space-x-4 w-full md:w-auto">
             <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
               <span className="text-lg text-white font-bold">
                 {auth?.nombre?.[0]?.toUpperCase() || 'A'}
@@ -139,7 +140,8 @@ const Admin = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-6 mb-8 w-full">
+        {/* Estadísticas - Responsive grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -185,153 +187,179 @@ const Admin = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-8 w-full">
-          <div className="col-span-2 bg-white rounded-lg shadow w-full">
+        {/* Layout principal - Desktop: lado a lado, Mobile: apilado */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Panel de Pedidos - Ocupa 2 columnas en desktop */}
+          <div className="lg:col-span-2 bg-white rounded-lg shadow-lg">
             <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">Pedidos</h2>
-              <p className="text-sm text-gray-600 mt-1">Lista de todos los pedidos activos</p>
-              <div className="mt-4">
-                <div className="relative">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-800">Pedidos</h2>
+                  <p className="text-sm text-gray-600 mt-1">Lista de todos los pedidos activos</p>
+                </div>
+                <div className="relative w-full md:w-80">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
                   <input
                     type="text"
-                    placeholder="Buscar por #ID, nombre o teléfono del cliente..."
+                    placeholder="Buscar por #ID, nombre o teléfono..."
                     value={busqueda}
                     onChange={(e) => setBusqueda(e.target.value)}
-                    className="w-full p-3 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                   />
                 </div>
               </div>
             </div>
-            <div className="max-h-[600px] overflow-y-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 sticky top-0 z-10">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      ID
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Cliente
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Fecha Creación
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Estado
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Acciones
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Total
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {pedidosFiltrados.map((pedido) => (
-                    <tr key={pedido.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">#{pedido.id}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {pedido.Usuario?.nombre || 'N/A'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {new Date(pedido.createdAt).toLocaleDateString('es-ES', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            pedido.estado === 'listo_para_retirar'
-                              ? 'bg-green-100 text-green-800'
-                              : pedido.estado === 'en_proceso'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : pedido.estado === 'retirado'
-                              ? 'bg-gray-100 text-gray-800'
-                              : 'bg-blue-100 text-blue-800'
-                          }`}
-                        >
-                          {pedido.estado === 'listo_para_retirar'
-                            ? 'Listo para retirar'
-                            : pedido.estado === 'en_proceso'
-                            ? 'En proceso'
-                            : pedido.estado === 'retirado'
-                            ? 'Retirado'
-                            : 'Pendiente'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <button
-                          onClick={() => verDetalles(pedido)}
-                          className="text-blue-600 hover:text-blue-900 mr-4"
-                        >
-                          Ver detalles
-                        </button>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        ${Number(pedido.precio_total).toFixed(2)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="space-y-8 w-full">
-            <div className="bg-white rounded-lg shadow w-full">
-              <div className="p-6 border-b border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-800">Usuarios</h2>
-                <p className="text-sm text-gray-600 mt-1">Gestión de usuarios registrados</p>
-              </div>
-              <div className="overflow-x-auto">
+            <div className="overflow-x-auto">
+              <div className="min-h-[400px] max-h-[70vh] overflow-y-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-gray-50 sticky top-0 z-10">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         ID
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        Nombre
+                      <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Cliente
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        Email
+                      <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                        Fecha
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        Teléfono
+                      <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Estado
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        Rol
+                      <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                        Total
+                      </th>
+                      <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Acciones
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {usuarios.map((usuario) => (
-                      <tr key={usuario.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          #{usuario.id}
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {pedidosFiltrados.length === 0 ? (
+                      <tr>
+                        <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
+                          No se encontraron pedidos
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {usuario.nombre}
+                      </tr>
+                    ) : (
+                      pedidosFiltrados.map((pedido) => (
+                        <tr key={pedido.id} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-4 md:px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">#{pedido.id}</div>
+                          </td>
+                          <td className="px-4 md:px-6 py-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {pedido.Usuario?.nombre || 'N/A'}
+                            </div>
+                            <div className="text-xs text-gray-500 md:hidden">
+                              {new Date(pedido.createdAt).toLocaleDateString('es-ES', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric'
+                              })}
+                            </div>
+                          </td>
+                          <td className="px-4 md:px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                            <div className="text-sm text-gray-900">
+                              {new Date(pedido.createdAt).toLocaleDateString('es-ES', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </div>
+                          </td>
+                          <td className="px-4 md:px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                pedido.estado === 'listo_para_retirar'
+                                  ? 'bg-green-100 text-green-800'
+                                  : pedido.estado === 'en_proceso'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : pedido.estado === 'retirado'
+                                  ? 'bg-gray-100 text-gray-800'
+                                  : 'bg-blue-100 text-blue-800'
+                              }`}
+                            >
+                              {pedido.estado === 'listo_para_retirar'
+                                ? 'Listo'
+                                : pedido.estado === 'en_proceso'
+                                ? 'Proceso'
+                                : pedido.estado === 'retirado'
+                                ? 'Retirado'
+                                : 'Pendiente'}
+                            </span>
+                          </td>
+                          <td className="px-4 md:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                            <div className="text-sm font-medium text-gray-900">
+                              ${Number(pedido.precio_total).toFixed(2)}
+                            </div>
+                          </td>
+                          <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm">
+                            <button
+                              onClick={() => verDetalles(pedido)}
+                              className="text-blue-600 hover:text-blue-900 font-medium transition-colors"
+                            >
+                              Ver
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {/* Panel de Usuarios - Ocupa 1 columna en desktop */}
+          <div className="lg:col-span-1 bg-white rounded-lg shadow-lg">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800">Usuarios</h2>
+              <p className="text-sm text-gray-600 mt-1">
+                {usuarios.length} usuario{usuarios.length !== 1 ? 's' : ''} registrado{usuarios.length !== 1 ? 's' : ''}
+              </p>
+            </div>
+            <div className="overflow-x-auto max-h-[70vh] overflow-y-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 sticky top-0 z-10">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Nombre
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                      Email
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Rol
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {usuarios.length === 0 ? (
+                    <tr>
+                      <td colSpan="3" className="px-6 py-8 text-center text-gray-500">
+                        No hay usuarios
+                      </td>
+                    </tr>
+                  ) : (
+                    usuarios.map((usuario) => (
+                      <tr key={usuario.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-4 py-3">
+                          <div className="text-sm font-medium text-gray-900">{usuario.nombre}</div>
+                          <div className="text-xs text-gray-500 md:hidden">{usuario.email}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {usuario.email}
+                        <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
+                          <div className="text-sm text-gray-500 truncate max-w-xs">{usuario.email}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {usuario.telefono || 'N/A'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 py-3 whitespace-nowrap">
                           <span
-                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                               usuario.rol === 'admin'
                                 ? 'bg-purple-100 text-purple-800'
                                 : 'bg-gray-100 text-gray-800'
@@ -341,10 +369,10 @@ const Admin = () => {
                           </span>
                         </td>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -352,7 +380,7 @@ const Admin = () => {
 
       {mostrarDetalles && pedidoSeleccionado && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg max-w-4xl w-full p-6 max-h-[90vh] overflow-y-auto shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-blue-700">
                 Pedido #{pedidoSeleccionado.id}
@@ -368,27 +396,49 @@ const Admin = () => {
               </button>
             </div>
 
-            <div className="mb-6">
-              <h3 className="font-semibold mb-2">Información del Cliente</h3>
-              <p>Nombre: {pedidoSeleccionado.Usuario?.nombre}</p>
-              <p>Email: {pedidoSeleccionado.Usuario?.email}</p>
+            <div className="mb-6 bg-gray-50 rounded-lg p-4">
+              <h3 className="font-semibold mb-3 text-gray-800">Información del Cliente</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <p className="text-sm text-gray-600">Nombre</p>
+                  <p className="font-medium text-gray-900">{pedidoSeleccionado.Usuario?.nombre || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Email</p>
+                  <p className="font-medium text-gray-900">{pedidoSeleccionado.Usuario?.email || 'N/A'}</p>
+                </div>
+                {pedidoSeleccionado.Usuario?.telefono && (
+                  <div>
+                    <p className="text-sm text-gray-600">Teléfono</p>
+                    <p className="font-medium text-gray-900">{pedidoSeleccionado.Usuario.telefono}</p>
+                  </div>
+                )}
+              </div>
             </div>
 
             {pedidoSeleccionado.archivo && (
               <div className="mb-6">
-                <h3 className="font-semibold mb-2">Archivos</h3>
-                {pedidoSeleccionado.archivo.split(',').map((archivo, index) => (
-                  <div key={index} className="mb-2">
-                    <a
-                      href={archivo.trim()}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      {archivo.trim().split('/').pop()}
-                    </a>
-                  </div>
-                ))}
+                <h3 className="font-semibold mb-3 text-gray-800">Archivos del Pedido</h3>
+                <div className="space-y-2">
+                  {pedidoSeleccionado.archivo.split(',').map((archivo, index) => (
+                    <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors">
+                      <div className="flex items-center space-x-3 flex-1 min-w-0">
+                        <svg className="w-5 h-5 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span className="text-sm text-gray-700 truncate">{archivo.trim().split('/').pop()}</span>
+                      </div>
+                      <a
+                        href={archivo.trim()}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-3 px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors flex-shrink-0"
+                      >
+                        Descargar
+                      </a>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -403,25 +453,26 @@ const Admin = () => {
               </div>
             )}
 
-            <div className="mb-6">
-              <h3 className="font-semibold mb-2">Estado del Pedido</h3>
-              <select
-                value={pedidoSeleccionado.estado}
-                onChange={(e) => actualizarEstado(e.target.value)}
-                className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
-                <option value="pendiente">Pendiente</option>
-                <option value="en_proceso">En Proceso</option>
-                <option value="listo_para_retirar">Listo para retirar</option>
-                <option value="retirado">Retirado</option>
-              </select>
-            </div>
-
-            <div className="mb-6">
-              <h3 className="font-semibold mb-2">Resumen de Costos</h3>
-              <p className="text-lg font-bold text-blue-600">
-                Total: ${pedidoSeleccionado.precio_total}
-              </p>
+            <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="font-semibold mb-2 text-gray-800">Estado del Pedido</h3>
+                <select
+                  value={pedidoSeleccionado.estado}
+                  onChange={(e) => actualizarEstado(e.target.value)}
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3"
+                >
+                  <option value="pendiente">Pendiente</option>
+                  <option value="en_proceso">En Proceso</option>
+                  <option value="listo_para_retirar">Listo para retirar</option>
+                  <option value="retirado">Retirado</option>
+                </select>
+              </div>
+              <div className="bg-blue-50 rounded-lg p-4">
+                <h3 className="font-semibold mb-2 text-gray-800">Resumen de Costos</h3>
+                <p className="text-2xl font-bold text-blue-600">
+                  ${Number(pedidoSeleccionado.precio_total).toFixed(2)}
+                </p>
+              </div>
             </div>
 
             <div className="flex justify-end gap-2">

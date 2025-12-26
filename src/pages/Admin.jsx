@@ -52,6 +52,7 @@ const Admin = () => {
 
   const pedidosFiltrados = pedidos.filter((pedido) => {
     const busquedaLower = busqueda.toLowerCase().trim()
+    if (!busquedaLower) return true
     if (busquedaLower.startsWith('#')) {
       return pedido.id.toString() === busquedaLower.substring(1)
     }

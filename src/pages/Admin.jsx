@@ -27,6 +27,9 @@ const Admin = () => {
         setPedidos(pedidosRes.data || [])
         setUsuarios(usuariosRes.data || [])
         
+        console.log('Pedidos cargados:', pedidosRes.data?.length || 0)
+        console.log('Usuarios cargados:', usuariosRes.data?.length || 0)
+        
         const limite = preciosRes.data.find(p => p.tipo === 'limite_facturacion')
         if (limite) {
           setLimiteFacturacion(Number(limite.precio) || 50000)

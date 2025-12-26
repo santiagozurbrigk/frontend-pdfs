@@ -180,9 +180,9 @@ const Admin = () => {
         </div>
 
         {/* Layout principal - Desktop: lado a lado, Mobile: apilado */}
-        <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
+        <div className="flex flex-col lg:flex-row gap-4 md:gap-6 w-full">
           {/* Panel de Pedidos - Ocupa 2/3 del espacio en desktop */}
-          <div className="w-full lg:w-2/3 bg-white rounded-lg shadow-lg">
+          <div className="w-full lg:w-2/3 bg-white rounded-lg shadow-lg flex-shrink-0">
             <div className="p-4 md:p-6 border-b border-gray-200">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div>
@@ -320,7 +320,7 @@ const Admin = () => {
           </div>
 
           {/* Panel de Usuarios - Ocupa 1/3 del espacio en desktop */}
-          <div className="w-full lg:w-1/3 lg:min-w-[350px] bg-white rounded-lg shadow-lg">
+          <div className="w-full lg:w-1/3 lg:min-w-[350px] bg-white rounded-lg shadow-lg flex-shrink-0">
             <div className="p-4 md:p-6 border-b border-gray-200">
               <h2 className="text-lg md:text-xl font-semibold text-gray-800">Usuarios</h2>
               <p className="text-xs md:text-sm text-gray-600 mt-1">

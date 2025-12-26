@@ -180,9 +180,9 @@ const Admin = () => {
         </div>
 
         {/* Layout principal - Desktop: lado a lado, Mobile: apilado */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
-          {/* Panel de Pedidos - Ocupa 8 columnas en desktop (2/3 del espacio) */}
-          <div className="lg:col-span-8 bg-white rounded-lg shadow-lg">
+        <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
+          {/* Panel de Pedidos - Ocupa 2/3 del espacio en desktop */}
+          <div className="flex-1 lg:flex-[2] bg-white rounded-lg shadow-lg">
             <div className="p-4 md:p-6 border-b border-gray-200">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div>

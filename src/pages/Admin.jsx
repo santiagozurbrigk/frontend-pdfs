@@ -320,8 +320,7 @@ const Admin = () => {
                             </button>
                           </td>
                         </tr>
-                        )
-                      })
+                      ))
                     )}
                   </tbody>
                 </table>

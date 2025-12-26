@@ -115,8 +115,8 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 w-full pb-20 md:pb-0">
-      <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6" style={{ minHeight: '100vh' }}>
+    <div className="w-full bg-gray-100 pb-20 md:pb-0">
+      <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <div>
@@ -320,7 +320,7 @@ const Admin = () => {
           </div>
 
           {/* Panel de Usuarios - Ocupa 1/3 del espacio en desktop */}
-          <div className="w-full lg:w-1/3 lg:min-w-[350px] bg-white rounded-lg shadow-lg" style={{ display: 'block' }}>
+          <div className="w-full lg:w-1/3 lg:min-w-[350px] bg-white rounded-lg shadow-lg">
             <div className="p-4 md:p-6 border-b border-gray-200">
               <h2 className="text-lg md:text-xl font-semibold text-gray-800">Usuarios</h2>
               <p className="text-xs md:text-sm text-gray-600 mt-1">

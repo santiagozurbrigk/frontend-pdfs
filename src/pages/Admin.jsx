@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
 import EtiquetaPedido from '../components/EtiquetaPedido'
 
 const Admin = () => {
-  const { auth } = useAuth()
+  const navigate = useNavigate()
+  const { auth, logout } = useAuth()
   const [pedidos, setPedidos] = useState([])
   const [usuarios, setUsuarios] = useState([])
   const [loading, setLoading] = useState(true)
@@ -111,6 +113,11 @@ const Admin = () => {
       setPedidoParaEtiqueta(pedido)
       setMostrarEtiqueta(true)
     }
+  }
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
   }
 
   if (loading) {
@@ -283,7 +290,7 @@ const Admin = () => {
         </nav>
 
         {/* Footer del Sidebar */}
-        <div className="p-4 border-t border-gray-200">
+        <div className="p-4 border-t border-gray-200 space-y-3">
           <div className="flex items-center space-x-3">
             <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
               <span className="text-white font-bold">
@@ -297,6 +304,15 @@ const Admin = () => {
               </p>
             </div>
           </div>
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <span>Cerrar Sesión</span>
+          </button>
         </div>
       </div>
 

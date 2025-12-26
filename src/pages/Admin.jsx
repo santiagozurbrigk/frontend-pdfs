@@ -208,8 +208,8 @@ const Admin = () => {
               </div>
             </div>
             <div className="overflow-x-auto">
-              <div className="min-h-[300px] max-h-[calc(100vh-400px)] overflow-y-auto">
-                <table className="w-full min-w-[800px]">
+              <div className="min-h-[300px] max-h-[calc(100vh-350px)] lg:max-h-[calc(100vh-280px)] overflow-y-auto">
+                <table className="w-full">
                   <thead className="bg-gray-50 sticky top-0 z-10">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">

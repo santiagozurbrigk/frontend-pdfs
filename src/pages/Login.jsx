@@ -27,7 +27,14 @@ const Login = () => {
     const result = await login(formData.email, formData.password)
 
     if (result.success) {
-      navigate('/dashboard')
+      // Obtener el usuario del contexto después del login
+      const user = JSON.parse(localStorage.getItem('user') || '{}')
+      // Redirigir a admin si es administrador, sino al dashboard
+      if (user.rol === 'admin') {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
     } else {
       setError(result.message)
     }

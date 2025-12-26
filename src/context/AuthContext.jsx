@@ -34,13 +34,15 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const { data } = await api.post('/auth/login', { email, password })
+      console.log('Respuesta del login:', data) // Debug
       const usuario = {
         id: data.id,
         nombre: data.nombre,
         email: data.email,
         telefono: data.telefono,
-        rol: data.rol
+        rol: data.rol || 'cliente' // Asegurar que siempre tenga un rol
       }
+      console.log('Usuario guardado:', usuario) // Debug
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(usuario))
       setAuth(usuario)

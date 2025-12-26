@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
 
 const Dashboard = () => {
+  const { auth } = useAuth()
   const [pedidos, setPedidos] = useState([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
+
+  // Redirigir a admin si el usuario es administrador
+  useEffect(() => {
+    if (auth && auth.rol === 'admin') {
+      navigate('/admin', { replace: true })
+    }
+  }, [auth, navigate])
 
   useEffect(() => {
     const fetchPedidos = async () => {

@@ -95,11 +95,11 @@ const EtiquetaPedido = ({ pedido, onClose }) => {
 
   const productoTexto = obtenerNombreProducto()
   
-  // Generar código hexadecimal para mostrar (como en la imagen)
-  const codigoHex = pedido.id.toString(16)
-  // Generar código alfanumérico más largo para mostrar debajo del código de barras
-  // Usamos el ID del pedido + un hash para crear un código único pero escaneable
-  const codigoBarrasTexto = `${pedido.id.toString(16)}${pedido.id.toString().padStart(8, '0').substring(0, 8)}`
+  // Usar solo números (formato decimal) para el ID del pedido
+  const codigoPedido = pedido.id.toString()
+  // Generar código numérico más largo para mostrar debajo del código de barras
+  // Usamos el ID del pedido con padding para crear un código único pero escaneable
+  const codigoBarrasTexto = pedido.id.toString().padStart(10, '0')
 
   return (
     <>
@@ -123,7 +123,7 @@ const EtiquetaPedido = ({ pedido, onClose }) => {
             <div className="text-center space-y-4">
               {/* Número del pedido rotado 180 grados */}
               <div className="transform rotate-180" style={{ transform: 'rotate(180deg)' }}>
-                <h3 className="text-xl font-bold text-gray-900 uppercase">Pedido #{codigoHex}</h3>
+                <h3 className="text-xl font-bold text-gray-900 uppercase">Pedido #{codigoPedido}</h3>
               </div>
               
               <div className="flex justify-center py-2">
@@ -135,7 +135,7 @@ const EtiquetaPedido = ({ pedido, onClose }) => {
               </div>
 
               <div className="text-base text-gray-700 font-mono">
-                <p>{codigoHex}</p>
+                <p>{codigoPedido}</p>
               </div>
 
               {/* Detalles centrados */}
@@ -171,7 +171,7 @@ const EtiquetaPedido = ({ pedido, onClose }) => {
           {/* Número del pedido rotado 180 grados */}
           <div style={{ transform: 'rotate(180deg)', marginBottom: '10px' }}>
             <h3 className="text-xl font-bold text-gray-900 uppercase">
-              Pedido #{codigoHex}
+              Pedido #{codigoPedido}
             </h3>
           </div>
           
@@ -184,7 +184,7 @@ const EtiquetaPedido = ({ pedido, onClose }) => {
           </div>
 
           <div className="text-base text-gray-700 font-mono" style={{ marginBottom: '15px', fontSize: '14px' }}>
-            <p>{codigoHex}</p>
+            <p>{codigoPedido}</p>
           </div>
 
           {/* Detalles centrados */}

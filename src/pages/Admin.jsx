@@ -116,7 +116,7 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 w-full pb-20 md:pb-0">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <div>
@@ -319,15 +319,15 @@ const Admin = () => {
             </div>
           </div>
 
-          {/* Panel de Usuarios - Ocupa 4 columnas en desktop (1/3 del espacio) */}
-          <div className="lg:col-span-4 bg-white rounded-lg shadow-lg">
+          {/* Panel de Usuarios - Ocupa 1/3 del espacio en desktop */}
+          <div className="flex-1 lg:flex-[1] lg:min-w-[350px] bg-white rounded-lg shadow-lg">
             <div className="p-4 md:p-6 border-b border-gray-200">
               <h2 className="text-lg md:text-xl font-semibold text-gray-800">Usuarios</h2>
               <p className="text-xs md:text-sm text-gray-600 mt-1">
                 {usuarios.length} usuario{usuarios.length !== 1 ? 's' : ''} registrado{usuarios.length !== 1 ? 's' : ''}
               </p>
             </div>
-            <div className="overflow-x-auto max-h-[calc(100vh-350px)] lg:max-h-[calc(100vh-300px)] overflow-y-auto">
+            <div className="overflow-x-auto max-h-[calc(100vh-350px)] lg:max-h-[calc(100vh-280px)] overflow-y-auto">
               <table className="w-full">
                 <thead className="bg-gray-50 sticky top-0 z-10">
                   <tr>

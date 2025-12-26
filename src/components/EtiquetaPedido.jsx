@@ -121,7 +121,10 @@ const EtiquetaPedido = ({ pedido, onClose }) => {
           {/* Vista previa de la etiqueta */}
           <div className="border-2 border-dashed border-gray-300 p-6 mb-4 bg-white">
             <div className="text-center space-y-4">
-              <h3 className="text-xl font-bold text-gray-900 uppercase">Pedido #{codigoHex}</h3>
+              {/* Número del pedido rotado 180 grados */}
+              <div className="transform rotate-180" style={{ transform: 'rotate(180deg)' }}>
+                <h3 className="text-xl font-bold text-gray-900 uppercase">Pedido #{codigoHex}</h3>
+              </div>
               
               <div className="flex justify-center py-2">
                 <svg ref={barcodeRef} className="max-w-full"></svg>
@@ -135,18 +138,11 @@ const EtiquetaPedido = ({ pedido, onClose }) => {
                 <p>{codigoHex}</p>
               </div>
 
-              <div className="text-left space-y-1 text-sm text-gray-800">
+              {/* Detalles centrados */}
+              <div className="flex flex-col items-center space-y-1 text-sm text-gray-800">
                 <p><span className="font-semibold">Cliente:</span> {pedido.Usuario?.nombre || 'N/A'}</p>
                 <p><span className="font-semibold">Fecha:</span> {fechaFormateada}</p>
-              </div>
-
-              <div className="text-left">
-                <p className="font-semibold mb-1 text-sm text-gray-800">Productos:</p>
-                <p className="text-sm text-gray-700">{productoTexto}</p>
-              </div>
-
-              <div className="text-left">
-                <p className="font-semibold text-lg text-gray-900">Importe: ${Number(pedido.precio_total).toFixed(3)}</p>
+                <p className="font-semibold text-lg text-gray-900 mt-2">Importe: ${Number(pedido.precio_total).toFixed(3)}</p>
               </div>
             </div>
           </div>
@@ -172,9 +168,12 @@ const EtiquetaPedido = ({ pedido, onClose }) => {
       {/* Etiqueta para imprimir (oculta hasta que se imprima) */}
       <div id="etiqueta-print" className="hidden">
         <div className="text-center space-y-4" style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-          <h3 className="text-xl font-bold text-gray-900 uppercase" style={{ marginBottom: '10px' }}>
-            Pedido #{codigoHex}
-          </h3>
+          {/* Número del pedido rotado 180 grados */}
+          <div style={{ transform: 'rotate(180deg)', marginBottom: '10px' }}>
+            <h3 className="text-xl font-bold text-gray-900 uppercase">
+              Pedido #{codigoHex}
+            </h3>
+          </div>
           
           <div className="flex justify-center py-2" style={{ marginBottom: '10px' }}>
             <svg ref={barcodePrintRef} style={{ maxWidth: '100%' }}></svg>
@@ -188,18 +187,11 @@ const EtiquetaPedido = ({ pedido, onClose }) => {
             <p>{codigoHex}</p>
           </div>
 
-          <div className="text-left space-y-1 text-sm text-gray-800" style={{ marginBottom: '10px' }}>
+          {/* Detalles centrados */}
+          <div className="flex flex-col items-center space-y-1 text-sm text-gray-800" style={{ marginBottom: '10px' }}>
             <p><span className="font-semibold">Cliente:</span> {pedido.Usuario?.nombre || 'N/A'}</p>
             <p><span className="font-semibold">Fecha:</span> {fechaFormateada}</p>
-          </div>
-
-          <div className="text-left" style={{ marginBottom: '10px' }}>
-            <p className="font-semibold mb-1 text-sm text-gray-800">Productos:</p>
-            <p className="text-sm text-gray-700">{productoTexto}</p>
-          </div>
-
-          <div className="text-left">
-            <p className="font-semibold text-lg text-gray-900">
+            <p className="font-semibold text-lg text-gray-900" style={{ marginTop: '8px' }}>
               Importe: ${Number(pedido.precio_total).toFixed(3)}
             </p>
           </div>

@@ -180,9 +180,9 @@ const Admin = () => {
         </div>
 
         {/* Layout principal - Desktop: lado a lado, Mobile: apilado */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
           {/* Panel de Pedidos - Ocupa 8 columnas en desktop (2/3 del espacio) */}
-          <div className="xl:col-span-8 bg-white rounded-lg shadow-lg">
+          <div className="lg:col-span-8 bg-white rounded-lg shadow-lg">
             <div className="p-4 md:p-6 border-b border-gray-200">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div>
@@ -212,22 +212,22 @@ const Admin = () => {
                 <table className="w-full min-w-[800px]">
                   <thead className="bg-gray-50 sticky top-0 z-10">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         ID
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Cliente
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[180px] hidden md:table-cell">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
                         Fecha Creación
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Estado
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24 hidden lg:table-cell">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
                         Total
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Acciones
                       </th>
                     </tr>
@@ -320,14 +320,14 @@ const Admin = () => {
           </div>
 
           {/* Panel de Usuarios - Ocupa 4 columnas en desktop (1/3 del espacio) */}
-          <div className="xl:col-span-4 bg-white rounded-lg shadow-lg">
+          <div className="lg:col-span-4 bg-white rounded-lg shadow-lg">
             <div className="p-4 md:p-6 border-b border-gray-200">
               <h2 className="text-lg md:text-xl font-semibold text-gray-800">Usuarios</h2>
               <p className="text-xs md:text-sm text-gray-600 mt-1">
                 {usuarios.length} usuario{usuarios.length !== 1 ? 's' : ''} registrado{usuarios.length !== 1 ? 's' : ''}
               </p>
             </div>
-            <div className="overflow-x-auto max-h-[calc(100vh-400px)] overflow-y-auto">
+            <div className="overflow-x-auto max-h-[calc(100vh-350px)] lg:max-h-[calc(100vh-300px)] overflow-y-auto">
               <table className="w-full">
                 <thead className="bg-gray-50 sticky top-0 z-10">
                   <tr>

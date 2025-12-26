@@ -123,7 +123,7 @@ const Admin = () => {
   }
 
   return (
-    <div className="flex h-screen bg-gray-100 overflow-hidden">
+    <div className="flex h-screen bg-gray-100 overflow-hidden" style={{ height: '100vh', display: 'flex' }}>
       {/* Sidebar */}
       <div className="w-64 bg-white shadow-lg flex flex-col">
         {/* Header del Sidebar */}

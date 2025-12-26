@@ -279,7 +279,7 @@ const Admin = () => {
         <div className="bg-white shadow-sm px-8 py-6 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-gray-800">
             {seccionActiva === 'pedidos' && 'Gestión de Pedidos'}
-            {seccionActiva === 'usuarios' && 'Gestión de Usuarios'}
+            {seccionActiva === 'usuarios' && esAdmin && 'Gestión de Usuarios'}
             {seccionActiva === 'estadisticas' && 'Estadísticas Generales'}
           </h2>
         </div>
@@ -416,7 +416,7 @@ const Admin = () => {
             </div>
           )}
 
-          {seccionActiva === 'usuarios' && (
+          {seccionActiva === 'usuarios' && esAdmin && (
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">

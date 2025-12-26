@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
+import EtiquetaPedido from '../components/EtiquetaPedido'
 
 const Admin = () => {
   const { auth } = useAuth()
@@ -10,6 +11,8 @@ const Admin = () => {
   const [error, setError] = useState(null)
   const [pedidoSeleccionado, setPedidoSeleccionado] = useState(null)
   const [mostrarDetalles, setMostrarDetalles] = useState(false)
+  const [mostrarEtiqueta, setMostrarEtiqueta] = useState(false)
+  const [pedidoParaEtiqueta, setPedidoParaEtiqueta] = useState(null)
   const [busqueda, setBusqueda] = useState('')
   const [seccionActiva, setSeccionActiva] = useState('pedidos')
 
@@ -40,17 +43,28 @@ const Admin = () => {
   const pedidosFiltrados = pedidos.filter((pedido) => {
     const busquedaLower = busqueda.toLowerCase().trim()
     if (!busquedaLower) return true
+    
+    // Buscar por ID (puede ser decimal o hexadecimal)
     if (busquedaLower.startsWith('#')) {
-      return pedido.id.toString() === busquedaLower.substring(1)
+      const idBusqueda = busquedaLower.substring(1)
+      return pedido.id.toString() === idBusqueda || pedido.id.toString(16) === idBusqueda.toLowerCase()
     }
-    if (!isNaN(busquedaLower) && busquedaLower !== '') {
+    
+    // Si es un número, buscar por ID (decimal o hexadecimal)
+    if (!isNaN(parseInt(busquedaLower, 10)) || /^[0-9a-f]+$/.test(busquedaLower)) {
+      const idDecimal = parseInt(busquedaLower, 10)
+      const idHex = busquedaLower.toLowerCase()
       return (
+        pedido.id === idDecimal ||
         pedido.id.toString() === busquedaLower ||
+        pedido.id.toString(16) === idHex ||
         pedido.Usuario?.telefono?.toString().includes(busquedaLower) ||
         pedido.Usuario?.email?.toLowerCase().includes(busquedaLower) ||
         pedido.Usuario?.nombre?.toLowerCase().includes(busquedaLower)
       )
     }
+    
+    // Búsqueda por texto
     return (
       pedido.Usuario?.nombre?.toLowerCase().includes(busquedaLower) ||
       pedido.Usuario?.email?.toLowerCase().includes(busquedaLower) ||
@@ -83,6 +97,19 @@ const Admin = () => {
       setPedidoSeleccionado({ ...pedidoSeleccionado, estado: nuevoEstado })
     } catch (error) {
       console.error('Error al actualizar estado:', error)
+    }
+  }
+
+  const generarEtiqueta = async (pedido) => {
+    try {
+      // Obtener detalles completos del pedido si no los tenemos
+      const { data } = await api.get(`/pedidos/${pedido.id}`)
+      setPedidoParaEtiqueta(data || pedido)
+      setMostrarEtiqueta(true)
+    } catch (error) {
+      console.error('Error al obtener detalles del pedido:', error)
+      setPedidoParaEtiqueta(pedido)
+      setMostrarEtiqueta(true)
     }
   }
 
@@ -399,12 +426,24 @@ const Admin = () => {
                               </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <button
-                                onClick={() => verDetalles(pedido)}
-                                className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors"
-                              >
-                                Ver detalles
-                              </button>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => verDetalles(pedido)}
+                                  className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors"
+                                >
+                                  Ver detalles
+                                </button>
+                                <button
+                                  onClick={() => generarEtiqueta(pedido)}
+                                  className="text-green-600 hover:text-green-800 font-medium text-sm transition-colors flex items-center gap-1"
+                                  title="Generar código de barras"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                  </svg>
+                                  Código
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))
@@ -781,6 +820,17 @@ const Admin = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Modal de Etiqueta con Código de Barras */}
+      {mostrarEtiqueta && pedidoParaEtiqueta && (
+        <EtiquetaPedido
+          pedido={pedidoParaEtiqueta}
+          onClose={() => {
+            setMostrarEtiqueta(false)
+            setPedidoParaEtiqueta(null)
+          }}
+        />
       )}
     </div>
   )

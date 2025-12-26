@@ -114,13 +114,85 @@ const Admin = () => {
     )
   }
 
-  const estadisticas = {
-    totalPedidos: pedidos.length,
-    pedidosRetirados: pedidos.filter((p) => p.estado === 'retirado').length,
-    enProceso: pedidos.filter((p) => p.estado === 'en_proceso').length,
-    listos: pedidos.filter((p) => p.estado === 'listo_para_retirar').length,
-    totalUsuarios: usuarios.length
+  // Calcular estadísticas avanzadas
+  const calcularEstadisticas = () => {
+    const totalPedidos = pedidos.length
+    const pedidosRetirados = pedidos.filter((p) => p.estado === 'retirado').length
+    const enProceso = pedidos.filter((p) => p.estado === 'en_proceso').length
+    const listos = pedidos.filter((p) => p.estado === 'listo_para_retirar').length
+    const pendientes = pedidos.filter((p) => p.estado === 'pendiente').length
+    
+    // Ingresos
+    const ingresosTotales = pedidos.reduce((sum, p) => sum + parseFloat(p.precio_total || 0), 0)
+    const ingresosRetirados = pedidos
+      .filter((p) => p.estado === 'retirado')
+      .reduce((sum, p) => sum + parseFloat(p.precio_total || 0), 0)
+    const promedioPorPedido = totalPedidos > 0 ? ingresosTotales / totalPedidos : 0
+    
+    // Pedidos del día
+    const hoy = new Date()
+    hoy.setHours(0, 0, 0, 0)
+    const pedidosHoy = pedidos.filter((p) => {
+      const fechaPedido = new Date(p.createdAt)
+      fechaPedido.setHours(0, 0, 0, 0)
+      return fechaPedido.getTime() === hoy.getTime()
+    }).length
+    
+    const ingresosHoy = pedidos
+      .filter((p) => {
+        const fechaPedido = new Date(p.createdAt)
+        fechaPedido.setHours(0, 0, 0, 0)
+        return fechaPedido.getTime() === hoy.getTime()
+      })
+      .reduce((sum, p) => sum + parseFloat(p.precio_total || 0), 0)
+    
+    // Pedidos de la semana
+    const inicioSemana = new Date(hoy)
+    inicioSemana.setDate(hoy.getDate() - hoy.getDay())
+    const pedidosSemana = pedidos.filter((p) => {
+      const fechaPedido = new Date(p.createdAt)
+      return fechaPedido >= inicioSemana
+    }).length
+    
+    // Pedidos del mes
+    const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1)
+    const pedidosMes = pedidos.filter((p) => {
+      const fechaPedido = new Date(p.createdAt)
+      return fechaPedido >= inicioMes
+    }).length
+    
+    const ingresosMes = pedidos
+      .filter((p) => {
+        const fechaPedido = new Date(p.createdAt)
+        return fechaPedido >= inicioMes
+      })
+      .reduce((sum, p) => sum + parseFloat(p.precio_total || 0), 0)
+    
+    // Clientes únicos
+    const clientesUnicos = new Set(pedidos.map((p) => p.Usuario?.id).filter(Boolean)).size
+    
+    return {
+      totalPedidos,
+      pedidosRetirados,
+      enProceso,
+      listos,
+      pendientes,
+      totalUsuarios: usuarios.length,
+      ingresosTotales,
+      ingresosRetirados,
+      ingresosHoy,
+      ingresosMes,
+      promedioPorPedido,
+      pedidosHoy,
+      pedidosSemana,
+      pedidosMes,
+      clientesUnicos
+    }
   }
+
+  const estadisticas = calcularEstadisticas()
+  const esAdmin = auth?.rol === 'admin'
+  const esEmpleado = auth?.rol === 'empleado'
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden" style={{ height: '100vh', display: 'flex' }}>
@@ -128,8 +200,12 @@ const Admin = () => {
       <div className="w-64 bg-white shadow-lg flex flex-col">
         {/* Header del Sidebar */}
         <div className="p-6 border-b border-gray-200">
-          <h1 className="text-2xl font-bold text-gray-800">Admin Panel</h1>
-          <p className="text-sm text-gray-500 mt-1">Panel de Control</p>
+          <h1 className="text-2xl font-bold text-gray-800">
+            {esAdmin ? 'Admin Panel' : 'Panel Empleado'}
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            {esAdmin ? 'Panel de Control' : 'Gestión de Pedidos'}
+          </p>
         </div>
 
         {/* Navegación */}
@@ -148,19 +224,21 @@ const Admin = () => {
             <span className="font-medium">Pedidos</span>
           </button>
 
-          <button
-            onClick={() => setSeccionActiva('usuarios')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-              seccionActiva === 'usuarios'
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            <span className="font-medium">Usuarios</span>
-          </button>
+          {esAdmin && (
+            <button
+              onClick={() => setSeccionActiva('usuarios')}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                seccionActiva === 'usuarios'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              <span className="font-medium">Usuarios</span>
+            </button>
+          )}
 
           <button
             onClick={() => setSeccionActiva('estadisticas')}
@@ -186,8 +264,10 @@ const Admin = () => {
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-800 truncate">{auth?.nombre || 'Admin'}</p>
-              <p className="text-xs text-gray-500">Administrador</p>
+              <p className="text-sm font-medium text-gray-800 truncate">{auth?.nombre || 'Usuario'}</p>
+              <p className="text-xs text-gray-500">
+                {esAdmin ? 'Administrador' : esEmpleado ? 'Empleado' : 'Usuario'}
+              </p>
             </div>
           </div>
         </div>

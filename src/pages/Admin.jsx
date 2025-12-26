@@ -100,16 +100,28 @@ const Admin = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando datos...</p>
+        </div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="text-center mt-10 text-red-600">
-        <p>{error}</p>
+      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <div className="text-center">
+          <p className="text-red-600 text-xl mb-2">Error</p>
+          <p className="text-gray-600">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Recargar
+          </button>
+        </div>
       </div>
     )
   }
@@ -180,9 +192,9 @@ const Admin = () => {
         </div>
 
         {/* Layout principal - Siempre lado a lado */}
-        <div className="flex flex-row gap-6 w-full">
+        <div className="flex flex-row gap-6 w-full" style={{ display: 'flex' }}>
           {/* Panel de Pedidos - Ocupa 2/3 del espacio */}
-          <div className="w-2/3 bg-white rounded-lg shadow-lg">
+          <div className="w-2/3 bg-white rounded-lg shadow-lg" style={{ display: 'block', width: '66.666667%' }}>
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
@@ -313,7 +325,7 @@ const Admin = () => {
           </div>
 
           {/* Panel de Usuarios - Ocupa 1/3 del espacio */}
-          <div className="w-1/3 min-w-[350px] bg-white rounded-lg shadow-lg">
+          <div className="w-1/3 min-w-[350px] bg-white rounded-lg shadow-lg" style={{ display: 'block', width: '33.333333%', minWidth: '350px' }}>
             <div className="p-6 border-b border-gray-200">
               <h2 className="text-xl font-semibold text-gray-800">Usuarios</h2>
               <p className="text-sm text-gray-600 mt-1">

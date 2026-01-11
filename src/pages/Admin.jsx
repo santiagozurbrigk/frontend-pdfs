@@ -820,6 +820,44 @@ const Admin = () => {
                 </div>
               </div>
 
+              {/* Detalles de la Impresión */}
+              <div>
+                <h3 className="font-semibold text-gray-800 mb-3">Detalles de la Impresión</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-sm text-gray-600 mb-1">Tipo de impresión</p>
+                    <p className="font-medium text-gray-900">
+                      {pedidoSeleccionado.tipo_impresion
+                        ? pedidoSeleccionado.tipo_impresion
+                            .replace(/_/g, ' ')
+                            .split(' ')
+                            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                            .join(' ')
+                        : 'N/A'}
+                    </p>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-sm text-gray-600 mb-1">Acabado</p>
+                    <p className="font-medium text-gray-900">
+                      {pedidoSeleccionado.acabado
+                        ? pedidoSeleccionado.acabado
+                            .split('_')
+                            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                            .join(' ')
+                        : 'N/A'}
+                    </p>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-sm text-gray-600 mb-1">Número de páginas</p>
+                    <p className="font-medium text-gray-900">{pedidoSeleccionado.num_paginas || 'N/A'}</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-sm text-gray-600 mb-1">Copias</p>
+                    <p className="font-medium text-gray-900">{pedidoSeleccionado.copias || 'N/A'}</p>
+                  </div>
+                </div>
+              </div>
+
               {pedidoSeleccionado.archivo && (
                 <div>
                   <h3 className="font-semibold text-gray-800 mb-3">Archivos del Pedido</h3>

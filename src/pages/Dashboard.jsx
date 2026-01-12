@@ -9,9 +9,9 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
-  // Redirigir a admin si el usuario es administrador
+  // Redirigir a admin si el usuario es administrador o empleado
   useEffect(() => {
-    if (auth && auth.rol === 'admin') {
+    if (auth && (auth.rol === 'admin' || auth.rol === 'empleado')) {
       navigate('/admin', { replace: true })
     }
   }, [auth, navigate])

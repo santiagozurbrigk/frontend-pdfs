@@ -29,8 +29,8 @@ const Login = () => {
     if (result.success) {
       // Obtener el usuario del contexto después del login
       const user = JSON.parse(localStorage.getItem('user') || '{}')
-      // Redirigir a admin si es administrador, sino al dashboard
-      if (user.rol === 'admin') {
+      // Redirigir a admin si es administrador o empleado, sino al dashboard
+      if (user.rol === 'admin' || user.rol === 'empleado') {
         navigate('/admin')
       } else {
         navigate('/dashboard')

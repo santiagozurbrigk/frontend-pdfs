@@ -15,9 +15,15 @@ const Login = () => {
   // Redirigir si ya está autenticado
   useEffect(() => {
     if (auth) {
+      console.log('Auth detectado en Login, rol:', auth.rol) // Debug
+      console.log('Es admin?', auth.rol === 'admin') // Debug
+      console.log('Es empleado?', auth.rol === 'empleado') // Debug
+      
       if (auth.rol === 'admin' || auth.rol === 'empleado') {
+        console.log('Redirigiendo a /admin desde Login') // Debug
         navigate('/admin', { replace: true })
       } else {
+        console.log('Redirigiendo a /dashboard desde Login') // Debug
         navigate('/dashboard', { replace: true })
       }
     }
@@ -38,16 +44,9 @@ const Login = () => {
     const result = await login(formData.email, formData.password)
 
     if (result.success) {
-      // Obtener el usuario del localStorage inmediatamente después del login
-      const user = JSON.parse(localStorage.getItem('user') || '{}')
-      console.log('Usuario después del login:', user) // Debug
-      
-      // Redirigir según el rol
-      if (user.rol === 'admin' || user.rol === 'empleado') {
-        navigate('/admin', { replace: true })
-      } else {
-        navigate('/dashboard', { replace: true })
-      }
+      // No hacer nada aquí, el useEffect se encargará de la redirección
+      // cuando el contexto se actualice
+      setLoading(false)
     } else {
       setError(result.message)
       setLoading(false)

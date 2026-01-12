@@ -34,7 +34,10 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const { data } = await api.post('/auth/login', { email, password })
-      console.log('Respuesta del login:', data) // Debug
+      console.log('Respuesta del login del backend:', data) // Debug
+      console.log('Rol recibido del backend:', data.rol) // Debug
+      console.log('Tipo del rol:', typeof data.rol) // Debug
+      
       const usuario = {
         id: data.id,
         nombre: data.nombre,
@@ -42,12 +45,17 @@ export const AuthProvider = ({ children }) => {
         telefono: data.telefono,
         rol: data.rol || 'cliente' // Asegurar que siempre tenga un rol
       }
-      console.log('Usuario guardado:', usuario) // Debug
+      console.log('Usuario guardado en contexto:', usuario) // Debug
+      console.log('Rol del usuario guardado:', usuario.rol) // Debug
+      console.log('Comparación empleado:', usuario.rol === 'empleado') // Debug
+      
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(usuario))
       setAuth(usuario)
+      console.log('Auth actualizado en contexto') // Debug
       return { success: true }
     } catch (error) {
+      console.error('Error en login:', error) // Debug
       return {
         success: false,
         message: error.response?.data?.mensaje || 'Error al iniciar sesión'

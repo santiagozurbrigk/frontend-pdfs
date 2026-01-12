@@ -45,6 +45,13 @@ const Admin = () => {
     return () => clearInterval(interval)
   }, [])
 
+  // Redirigir empleados que intenten acceder a estadísticas
+  useEffect(() => {
+    if (auth?.rol === 'empleado' && seccionActiva === 'estadisticas') {
+      setSeccionActiva('pedidos')
+    }
+  }, [auth?.rol, seccionActiva])
+
   const pedidosFiltrados = pedidos.filter((pedido) => {
     const busquedaLower = busqueda.toLowerCase().trim()
     if (!busquedaLower) return true
@@ -284,7 +291,7 @@ const Admin = () => {
             <span className="font-medium">Pedidos</span>
           </button>
 
-          {esAdmin && (
+          {(esAdmin || esEmpleado) && (
             <button
               onClick={() => setSeccionActiva('usuarios')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
@@ -300,19 +307,21 @@ const Admin = () => {
             </button>
           )}
 
-          <button
-            onClick={() => setSeccionActiva('estadisticas')}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-              seccionActiva === 'estadisticas'
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            <span className="font-medium">Estadísticas</span>
-          </button>
+          {esAdmin && (
+            <button
+              onClick={() => setSeccionActiva('estadisticas')}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                seccionActiva === 'estadisticas'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              <span className="font-medium">Estadísticas</span>
+            </button>
+          )}
         </nav>
 
         {/* Footer del Sidebar */}
@@ -348,7 +357,7 @@ const Admin = () => {
         <div className="bg-white shadow-sm px-8 py-6 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-gray-800">
             {seccionActiva === 'pedidos' && 'Gestión de Pedidos'}
-            {seccionActiva === 'usuarios' && esAdmin && 'Gestión de Usuarios'}
+            {seccionActiva === 'usuarios' && (esAdmin || esEmpleado) && 'Gestión de Usuarios'}
             {seccionActiva === 'estadisticas' && 'Estadísticas Generales'}
           </h2>
         </div>
@@ -509,7 +518,7 @@ const Admin = () => {
             </div>
           )}
 
-          {seccionActiva === 'usuarios' && esAdmin && (
+          {seccionActiva === 'usuarios' && (esAdmin || esEmpleado) && (
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
@@ -579,7 +588,7 @@ const Admin = () => {
             </div>
           )}
 
-          {seccionActiva === 'estadisticas' && (
+          {seccionActiva === 'estadisticas' && esAdmin && (
             <div className="space-y-6">
               {/* Tarjetas de Estadísticas Principales */}
               <div className="grid grid-cols-4 gap-6">
@@ -891,16 +900,38 @@ const Admin = () => {
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <h3 className="font-semibold text-gray-800 mb-2">Estado del Pedido</h3>
-                  <select
-                    value={pedidoSeleccionado.estado}
-                    onChange={(e) => actualizarEstado(e.target.value)}
-                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3"
-                  >
-                    <option value="pendiente">Pendiente</option>
-                    <option value="en_proceso">En Proceso</option>
-                    <option value="listo_para_retirar">Listo para retirar</option>
-                    <option value="retirado">Retirado</option>
-                  </select>
+                  {esAdmin ? (
+                    <select
+                      value={pedidoSeleccionado.estado}
+                      onChange={(e) => actualizarEstado(e.target.value)}
+                      className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3"
+                    >
+                      <option value="pendiente">Pendiente</option>
+                      <option value="en_proceso">En Proceso</option>
+                      <option value="listo_para_retirar">Listo para retirar</option>
+                      <option value="retirado">Retirado</option>
+                    </select>
+                  ) : (
+                    <div className="w-full rounded-lg border-gray-300 bg-gray-50 py-2 px-3">
+                      <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
+                        pedidoSeleccionado.estado === 'listo_para_retirar'
+                          ? 'bg-green-100 text-green-800'
+                          : pedidoSeleccionado.estado === 'en_proceso'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : pedidoSeleccionado.estado === 'retirado'
+                          ? 'bg-gray-100 text-gray-800'
+                          : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {pedidoSeleccionado.estado === 'listo_para_retirar'
+                          ? 'Listo para retirar'
+                          : pedidoSeleccionado.estado === 'en_proceso'
+                          ? 'En Proceso'
+                          : pedidoSeleccionado.estado === 'retirado'
+                          ? 'Retirado'
+                          : 'Pendiente'}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="bg-blue-50 rounded-lg p-4">
                   <h3 className="font-semibold text-gray-800 mb-2">Total</h3>

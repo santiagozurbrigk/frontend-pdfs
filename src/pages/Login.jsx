@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
@@ -9,8 +9,19 @@ const Login = () => {
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { login } = useAuth()
+  const { login, auth } = useAuth()
   const navigate = useNavigate()
+
+  // Redirigir si ya está autenticado
+  useEffect(() => {
+    if (auth) {
+      if (auth.rol === 'admin' || auth.rol === 'empleado') {
+        navigate('/admin', { replace: true })
+      } else {
+        navigate('/dashboard', { replace: true })
+      }
+    }
+  }, [auth, navigate])
 
   const handleChange = (e) => {
     setFormData({
@@ -27,19 +38,20 @@ const Login = () => {
     const result = await login(formData.email, formData.password)
 
     if (result.success) {
-      // Obtener el usuario del contexto después del login
+      // Obtener el usuario del localStorage inmediatamente después del login
       const user = JSON.parse(localStorage.getItem('user') || '{}')
-      // Redirigir a admin si es administrador o empleado, sino al dashboard
+      console.log('Usuario después del login:', user) // Debug
+      
+      // Redirigir según el rol
       if (user.rol === 'admin' || user.rol === 'empleado') {
-        navigate('/admin')
+        navigate('/admin', { replace: true })
       } else {
-        navigate('/dashboard')
+        navigate('/dashboard', { replace: true })
       }
     } else {
       setError(result.message)
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   return (

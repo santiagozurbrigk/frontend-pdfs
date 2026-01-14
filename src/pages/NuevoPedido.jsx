@@ -4,7 +4,11 @@ import api from '../services/api'
 import * as pdfjsLib from 'pdfjs-dist'
 
 // Configurar el worker para pdfjs-dist
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
+// Usar el worker desde node_modules a través de Vite (versión 5.x usa .mjs)
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url
+).toString()
 
 const NuevoPedido = () => {
   const [formData, setFormData] = useState({

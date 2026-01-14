@@ -109,13 +109,13 @@ const NuevoPedido = () => {
             num_paginas: totalPaginas.toString()
           }))
         } else if (errores.length > 0) {
-          setError(`No se pudieron contar las páginas de algunos archivos: ${errores.join(', ')}. Por favor, ingresa el número de páginas manualmente.`)
+          setError(`No se pudieron contar las páginas de algunos archivos: ${errores.join(', ')}. Por favor, contacta al administrador.`)
         } else {
-          setError('Los archivos seleccionados no son PDFs. Por favor, ingresa el número de páginas manualmente.')
+          setError('Los archivos seleccionados no son PDFs. Solo se pueden procesar archivos PDF.')
         }
       } catch (error) {
         console.error('Error al procesar archivos:', error)
-        setError('Error al contar las páginas. Por favor, ingresa el número de páginas manualmente.')
+        setError('Error al contar las páginas. Por favor, intenta con otros archivos o contacta al administrador.')
       } finally {
         setContandoPaginas(false)
       }
@@ -257,16 +257,22 @@ const NuevoPedido = () => {
                 (calculado automáticamente)
               </span>
             )}
+            {contandoPaginas && (
+              <span className="ml-2 text-xs text-blue-600 font-normal">
+                (contando páginas...)
+              </span>
+            )}
           </label>
           <input
             type="number"
             name="num_paginas"
             value={formData.num_paginas}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+            readOnly
+            className="w-full p-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
             min="1"
             required
             disabled={contandoPaginas}
+            placeholder={archivos.length === 0 ? "Sube archivos para calcular automáticamente" : ""}
           />
           {contandoPaginas && (
             <p className="text-xs text-gray-500 mt-1">

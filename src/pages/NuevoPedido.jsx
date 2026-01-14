@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import * as pdfjsLib from 'pdfjs-dist'
@@ -22,7 +22,31 @@ const NuevoPedido = () => {
   const [loading, setLoading] = useState(false)
   const [contandoPaginas, setContandoPaginas] = useState(false)
   const [error, setError] = useState('')
+  const [precios, setPrecios] = useState({
+    simple_faz: 50,
+    doble_faz: 80,
+    doble_faz_2pag: 100,
+    anillado: 2500
+  })
   const navigate = useNavigate()
+
+  // Cargar precios desde la API
+  useEffect(() => {
+    const cargarPrecios = async () => {
+      try {
+        const { data } = await api.get('/precios')
+        const preciosMap = {}
+        data.forEach(p => {
+          preciosMap[p.tipo] = parseFloat(p.precio)
+        })
+        setPrecios(preciosMap)
+      } catch (error) {
+        console.error('Error al cargar precios, usando valores por defecto:', error)
+        // Mantener valores por defecto si hay error
+      }
+    }
+    cargarPrecios()
+  }, [])
 
   const handleChange = (e) => {
     setFormData({
@@ -105,18 +129,12 @@ const NuevoPedido = () => {
   }
 
   const calcularPrecio = () => {
-    const precioPorPagina = {
-      simple_faz: 50,
-      doble_faz: 80,
-      doble_faz_2pag: 100
-    }
-
-    const precio = precioPorPagina[formData.tipo_impresion] || 50
+    const precioPorPagina = precios[formData.tipo_impresion] || 50
     const totalPaginas = parseInt(formData.num_paginas) || 0
     const copias = parseInt(formData.copias) || 1
-    const precioAnillado = formData.acabado === 'anillado' ? 2500 : 0
+    const precioAnillado = formData.acabado === 'anillado' ? (precios.anillado || 2500) : 0
 
-    return (precio * totalPaginas * copias) + precioAnillado
+    return (precioPorPagina * totalPaginas * copias) + precioAnillado
   }
 
   const handleSubmit = async (e) => {

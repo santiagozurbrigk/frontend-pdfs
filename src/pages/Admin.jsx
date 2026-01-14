@@ -20,17 +20,29 @@ const Admin = () => {
   const [mostrarConfirmacionEliminar, setMostrarConfirmacionEliminar] = useState(false)
   const [pedidoAEliminar, setPedidoAEliminar] = useState(null)
   const [eliminando, setEliminando] = useState(false)
+  const [precios, setPrecios] = useState([])
+  const [preciosEditando, setPreciosEditando] = useState({})
+  const [guardandoPrecios, setGuardandoPrecios] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [pedidosRes, usuariosRes] = await Promise.all([
+        const [pedidosRes, usuariosRes, preciosRes] = await Promise.all([
           api.get('/pedidos/todos'),
-          api.get('/usuarios/todos')
+          api.get('/usuarios/todos'),
+          api.get('/precios').catch(() => ({ data: [] })) // Si falla, usar array vacío
         ])
 
         setPedidos(pedidosRes.data || [])
         setUsuarios(usuariosRes.data || [])
+        setPrecios(preciosRes.data || [])
+        
+        // Inicializar preciosEditando con los valores actuales
+        const preciosMap = {}
+        preciosRes.data.forEach(p => {
+          preciosMap[p.tipo] = parseFloat(p.precio)
+        })
+        setPreciosEditando(preciosMap)
         setLoading(false)
       } catch (error) {
         console.error('Error al cargar datos:', error)
@@ -308,19 +320,34 @@ const Admin = () => {
           )}
 
           {esAdmin && (
-            <button
-              onClick={() => setSeccionActiva('estadisticas')}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                seccionActiva === 'estadisticas'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              <span className="font-medium">Estadísticas</span>
-            </button>
+            <>
+              <button
+                onClick={() => setSeccionActiva('precios')}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                  seccionActiva === 'precios'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="font-medium">Precios</span>
+              </button>
+              <button
+                onClick={() => setSeccionActiva('estadisticas')}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                  seccionActiva === 'estadisticas'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span className="font-medium">Estadísticas</span>
+              </button>
+            </>
           )}
         </nav>
 
@@ -358,6 +385,7 @@ const Admin = () => {
           <h2 className="text-2xl font-bold text-gray-800">
             {seccionActiva === 'pedidos' && 'Gestión de Pedidos'}
             {seccionActiva === 'usuarios' && (esAdmin || esEmpleado) && 'Gestión de Usuarios'}
+            {seccionActiva === 'precios' && esAdmin && 'Gestión de Precios'}
             {seccionActiva === 'estadisticas' && 'Estadísticas Generales'}
           </h2>
         </div>
@@ -584,6 +612,165 @@ const Admin = () => {
                     )}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          )}
+
+          {seccionActiva === 'precios' && esAdmin && (
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-6">
+                  Configurar Precios de Impresión
+                </h3>
+                
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault()
+                    setGuardandoPrecios(true)
+                    try {
+                      const preciosArray = Object.keys(preciosEditando).map(tipo => ({
+                        tipo,
+                        precio: preciosEditando[tipo]
+                      }))
+                      
+                      await api.put('/precios', preciosArray)
+                      
+                      // Actualizar la lista de precios
+                      const { data } = await api.get('/precios')
+                      setPrecios(data)
+                      
+                      alert('Precios actualizados correctamente')
+                    } catch (error) {
+                      console.error('Error al guardar precios:', error)
+                      alert('Error al guardar los precios. Por favor, intenta nuevamente.')
+                    } finally {
+                      setGuardandoPrecios(false)
+                    }
+                  }}
+                  className="space-y-6"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Precio Simple Faz */}
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Simple Faz (por página)
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-500">$</span>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={preciosEditando.simple_faz || 50}
+                          onChange={(e) =>
+                            setPreciosEditando({
+                              ...preciosEditando,
+                              simple_faz: parseFloat(e.target.value) || 0
+                            })
+                          }
+                          className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Precio Doble Faz */}
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Doble Faz (por página)
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-500">$</span>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={preciosEditando.doble_faz || 80}
+                          onChange={(e) =>
+                            setPreciosEditando({
+                              ...preciosEditando,
+                              doble_faz: parseFloat(e.target.value) || 0
+                            })
+                          }
+                          className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Precio Doble Faz 2 Páginas */}
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Doble Faz (2 páginas por hoja)
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-500">$</span>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={preciosEditando.doble_faz_2pag || 100}
+                          onChange={(e) =>
+                            setPreciosEditando({
+                              ...preciosEditando,
+                              doble_faz_2pag: parseFloat(e.target.value) || 0
+                            })
+                          }
+                          className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Precio Anillado */}
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Acabado Anillado (costo fijo)
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-500">$</span>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={preciosEditando.anillado || 2500}
+                          onChange={(e) =>
+                            setPreciosEditando({
+                              ...preciosEditando,
+                              anillado: parseFloat(e.target.value) || 0
+                            })
+                          }
+                          className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        // Restaurar valores originales
+                        const preciosMap = {}
+                        precios.forEach(p => {
+                          preciosMap[p.tipo] = parseFloat(p.precio)
+                        })
+                        setPreciosEditando(preciosMap)
+                      }}
+                      className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={guardandoPrecios}
+                      className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {guardandoPrecios ? 'Guardando...' : 'Guardar Precios'}
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           )}

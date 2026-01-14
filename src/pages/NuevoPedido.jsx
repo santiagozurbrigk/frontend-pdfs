@@ -1,6 +1,10 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
+import * as pdfjsLib from 'pdfjs-dist'
+
+// Configurar el worker para pdfjs-dist
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
 
 const NuevoPedido = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +16,7 @@ const NuevoPedido = () => {
   })
   const [archivos, setArchivos] = useState([])
   const [loading, setLoading] = useState(false)
+  const [contandoPaginas, setContandoPaginas] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
@@ -22,8 +27,77 @@ const NuevoPedido = () => {
     })
   }
 
-  const handleFileChange = (e) => {
-    setArchivos(Array.from(e.target.files))
+  // Función para contar páginas de un PDF
+  const contarPaginasPDF = async (file) => {
+    return new Promise((resolve, reject) => {
+      // Solo procesar archivos PDF
+      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+        // Si no es PDF, retornar 0 páginas (para archivos .doc, .docx)
+        resolve(0)
+        return
+      }
+
+      const reader = new FileReader()
+      reader.onload = async (e) => {
+        try {
+          const typedArray = new Uint8Array(e.target.result)
+          const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise
+          resolve(pdf.numPages)
+        } catch (error) {
+          console.error('Error al leer PDF:', error)
+          reject(error)
+        }
+      }
+      reader.onerror = reject
+      reader.readAsArrayBuffer(file)
+    })
+  }
+
+  const handleFileChange = async (e) => {
+    const archivosSeleccionados = Array.from(e.target.files)
+    setArchivos(archivosSeleccionados)
+    setError('')
+
+    // Contar páginas automáticamente
+    if (archivosSeleccionados.length > 0) {
+      setContandoPaginas(true)
+      try {
+        let totalPaginas = 0
+        const errores = []
+
+        for (const archivo of archivosSeleccionados) {
+          try {
+            const paginas = await contarPaginasPDF(archivo)
+            totalPaginas += paginas
+          } catch (error) {
+            console.error(`Error al contar páginas de ${archivo.name}:`, error)
+            errores.push(archivo.name)
+          }
+        }
+
+        if (totalPaginas > 0) {
+          setFormData(prev => ({
+            ...prev,
+            num_paginas: totalPaginas.toString()
+          }))
+        } else if (errores.length > 0) {
+          setError(`No se pudieron contar las páginas de algunos archivos: ${errores.join(', ')}. Por favor, ingresa el número de páginas manualmente.`)
+        } else {
+          setError('Los archivos seleccionados no son PDFs. Por favor, ingresa el número de páginas manualmente.')
+        }
+      } catch (error) {
+        console.error('Error al procesar archivos:', error)
+        setError('Error al contar las páginas. Por favor, ingresa el número de páginas manualmente.')
+      } finally {
+        setContandoPaginas(false)
+      }
+    } else {
+      // Si no hay archivos, limpiar el número de páginas
+      setFormData(prev => ({
+        ...prev,
+        num_paginas: ''
+      }))
+    }
   }
 
   const calcularPrecio = () => {
@@ -104,9 +178,20 @@ const NuevoPedido = () => {
             required
           />
           {archivos.length > 0 && (
-            <p className="text-sm text-gray-600 mt-2">
-              {archivos.length} archivo(s) seleccionado(s)
-            </p>
+            <div className="mt-2 space-y-1">
+              <p className="text-sm text-gray-600">
+                {archivos.length} archivo(s) seleccionado(s)
+              </p>
+              {contandoPaginas && (
+                <p className="text-sm text-blue-600 flex items-center">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Contando páginas...
+                </p>
+              )}
+            </div>
           )}
         </div>
 
@@ -144,6 +229,11 @@ const NuevoPedido = () => {
         <div>
           <label className="block text-gray-700 text-sm font-medium mb-2">
             Número de Páginas
+            {formData.num_paginas && !contandoPaginas && (
+              <span className="ml-2 text-xs text-green-600 font-normal">
+                (calculado automáticamente)
+              </span>
+            )}
           </label>
           <input
             type="number"
@@ -153,7 +243,13 @@ const NuevoPedido = () => {
             className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
             min="1"
             required
+            disabled={contandoPaginas}
           />
+          {contandoPaginas && (
+            <p className="text-xs text-gray-500 mt-1">
+              Procesando archivos para contar páginas...
+            </p>
+          )}
         </div>
 
         <div>

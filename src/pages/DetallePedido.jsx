@@ -8,10 +8,29 @@ const DetallePedido = () => {
   const [pedido, setPedido] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [precios, setPrecios] = useState({
+    simple_faz: 50,
+    doble_faz: 80,
+    doble_faz_2pag: 100,
+    anillado: 2500
+  })
 
   useEffect(() => {
-    const fetchPedido = async () => {
+    const fetchData = async () => {
       try {
+        // Cargar precios
+        try {
+          const { data: preciosData } = await api.get('/precios')
+          const preciosMap = {}
+          preciosData.forEach(p => {
+            preciosMap[p.tipo] = parseFloat(p.precio)
+          })
+          setPrecios(preciosMap)
+        } catch (error) {
+          console.error('Error al cargar precios, usando valores por defecto:', error)
+        }
+
+        // Cargar pedido
         const { data } = await api.get(`/pedidos/historial`)
         const pedidoEncontrado = data.find((p) => p.id === parseInt(id))
         
@@ -34,7 +53,7 @@ const DetallePedido = () => {
       }
     }
 
-    fetchPedido()
+    fetchData()
   }, [id, navigate])
 
   if (loading) {
@@ -175,20 +194,33 @@ const DetallePedido = () => {
               Resumen de costos
             </h3>
             <div className="space-y-2">
-              <div className="flex justify-between items-center text-gray-600">
-                <span>Impresión</span>
-                <span>${pedido.precio_total ? Number(pedido.precio_total).toFixed(2) : '0.00'}</span>
-              </div>
-              {pedido.acabado === 'anillado' && (
-                <div className="flex justify-between items-center text-gray-600">
-                  <span>Anillado</span>
-                  <span>${((pedido.copias || 0) * 2500).toFixed(2)}</span>
-                </div>
-              )}
-              <div className="flex justify-between items-center text-xl font-bold text-blue-600 pt-4 border-t">
-                <span>Total</span>
-                <span>${pedido.precio_total ? Number(pedido.precio_total).toFixed(2) : '0.00'}</span>
-              </div>
+              {(() => {
+                // Calcular desglose correcto
+                const precioPorPagina = precios[pedido.tipo_impresion] || 50
+                const precioImpresion = precioPorPagina * (pedido.num_paginas || 0) * (pedido.copias || 1)
+                const precioAnillado = pedido.acabado === 'anillado' 
+                  ? (precios.anillado || 2500) * (pedido.copias || 1) 
+                  : 0
+                
+                return (
+                  <>
+                    <div className="flex justify-between items-center text-gray-600">
+                      <span>Impresión ({pedido.num_paginas || 0} páginas × {pedido.copias || 1} copias)</span>
+                      <span>${precioImpresion.toFixed(2)}</span>
+                    </div>
+                    {pedido.acabado === 'anillado' && (
+                      <div className="flex justify-between items-center text-gray-600">
+                        <span>Anillado ({pedido.copias || 1} unidades)</span>
+                        <span>${precioAnillado.toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between items-center text-xl font-bold text-blue-600 pt-4 border-t">
+                      <span>Total</span>
+                      <span>${pedido.precio_total ? Number(pedido.precio_total).toFixed(2) : '0.00'}</span>
+                    </div>
+                  </>
+                )
+              })()}
             </div>
           </div>
         </div>

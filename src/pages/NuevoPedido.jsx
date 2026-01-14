@@ -132,7 +132,8 @@ const NuevoPedido = () => {
     const precioPorPagina = precios[formData.tipo_impresion] || 50
     const totalPaginas = parseInt(formData.num_paginas) || 0
     const copias = parseInt(formData.copias) || 1
-    const precioAnillado = formData.acabado === 'anillado' ? (precios.anillado || 2500) : 0
+    // El precio del anillado se multiplica por el número de copias
+    const precioAnillado = formData.acabado === 'anillado' ? (precios.anillado || 2500) * copias : 0
 
     return (precioPorPagina * totalPaginas * copias) + precioAnillado
   }

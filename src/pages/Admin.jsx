@@ -16,6 +16,7 @@ const Admin = () => {
   const [mostrarEtiqueta, setMostrarEtiqueta] = useState(false)
   const [pedidoParaEtiqueta, setPedidoParaEtiqueta] = useState(null)
   const [busqueda, setBusqueda] = useState('')
+  const [busquedaUsuarios, setBusquedaUsuarios] = useState('')
   const [seccionActiva, setSeccionActiva] = useState('pedidos')
   const [mostrarConfirmacionEliminar, setMostrarConfirmacionEliminar] = useState(false)
   const [pedidoAEliminar, setPedidoAEliminar] = useState(null)
@@ -93,6 +94,35 @@ const Admin = () => {
       pedido.Usuario?.nombre?.toLowerCase().includes(busquedaLower) ||
       pedido.Usuario?.email?.toLowerCase().includes(busquedaLower) ||
       pedido.Usuario?.telefono?.toString().includes(busquedaLower)
+    )
+  })
+
+  const usuariosFiltrados = usuarios.filter((usuario) => {
+    const busquedaLower = busquedaUsuarios.toLowerCase().trim()
+    if (!busquedaLower) return true
+    
+    // Buscar por ID
+    if (busquedaLower.startsWith('#')) {
+      const idBusqueda = busquedaLower.substring(1)
+      return usuario.id.toString() === idBusqueda
+    }
+    
+    // Si es un número, buscar por ID
+    if (!isNaN(parseInt(busquedaLower, 10))) {
+      const idDecimal = parseInt(busquedaLower, 10)
+      return (
+        usuario.id === idDecimal ||
+        usuario.id.toString() === busquedaLower ||
+        usuario.telefono?.toString().includes(busquedaLower)
+      )
+    }
+    
+    // Búsqueda por texto (nombre, email, teléfono, rol)
+    return (
+      usuario.nombre?.toLowerCase().includes(busquedaLower) ||
+      usuario.email?.toLowerCase().includes(busquedaLower) ||
+      usuario.telefono?.toString().includes(busquedaLower) ||
+      usuario.rol?.toLowerCase().includes(busquedaLower)
     )
   })
 
@@ -547,71 +577,99 @@ const Admin = () => {
           )}
 
           {seccionActiva === 'usuarios' && (esAdmin || esEmpleado) && (
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        ID
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Nombre
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Email
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Teléfono
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Rol
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {usuarios.length === 0 ? (
+            <div className="space-y-6">
+              {/* Barra de búsqueda */}
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Buscar por #ID, nombre, email, teléfono o rol..."
+                    value={busquedaUsuarios}
+                    onChange={(e) => setBusquedaUsuarios(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              {/* Tabla de Usuarios */}
+              <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
                       <tr>
-                        <td colSpan="5" className="px-6 py-12 text-center">
-                          <div className="flex flex-col items-center">
-                            <svg className="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                            </svg>
-                            <p className="text-gray-500 text-lg">No hay usuarios registrados</p>
-                          </div>
-                        </td>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          ID
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Nombre
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Email
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Teléfono
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Rol
+                        </th>
                       </tr>
-                    ) : (
-                      usuarios.map((usuario) => (
-                        <tr key={usuario.id} className="hover:bg-gray-50 transition-colors">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm font-semibold text-gray-900">#{usuario.id}</span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="text-sm font-medium text-gray-900">{usuario.nombre}</div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="text-sm text-gray-900">{usuario.email}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{usuario.telefono || 'N/A'}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span
-                              className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                                usuario.rol === 'admin'
-                                  ? 'bg-purple-100 text-purple-800'
-                                  : 'bg-gray-100 text-gray-800'
-                              }`}
-                            >
-                              {usuario.rol}
-                            </span>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {usuariosFiltrados.length === 0 ? (
+                        <tr>
+                          <td colSpan="5" className="px-6 py-12 text-center">
+                            <div className="flex flex-col items-center">
+                              <svg className="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                              </svg>
+                              <p className="text-gray-500 text-lg">
+                                {busquedaUsuarios ? 'No se encontraron usuarios' : 'No hay usuarios registrados'}
+                              </p>
+                              {busquedaUsuarios && (
+                                <p className="text-gray-400 text-sm mt-2">Intenta con otros términos de búsqueda</p>
+                              )}
+                            </div>
                           </td>
                         </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
+                      ) : (
+                        usuariosFiltrados.map((usuario) => (
+                          <tr key={usuario.id} className="hover:bg-gray-50 transition-colors">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className="text-sm font-semibold text-gray-900">#{usuario.id}</span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="text-sm font-medium text-gray-900">{usuario.nombre}</div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="text-sm text-gray-900">{usuario.email}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">{usuario.telefono || 'N/A'}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span
+                                className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                                  usuario.rol === 'admin'
+                                    ? 'bg-purple-100 text-purple-800'
+                                    : usuario.rol === 'empleado'
+                                    ? 'bg-blue-100 text-blue-800'
+                                    : 'bg-gray-100 text-gray-800'
+                                }`}
+                              >
+                                {usuario.rol}
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
